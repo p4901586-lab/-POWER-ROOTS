@@ -7,7 +7,7 @@ export default function AdminPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (password === "admin") {
+    if (password === "1739") {
       setAuthenticated(true)
     } else {
       alert("Невірний пароль")

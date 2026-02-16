@@ -2,8 +2,8 @@ import Reveal from "./Reveal"
 
 export default function Hero() {
   const OLD_PRICE = 1250
-  const NEW_PRICE = 600
-  const SAVINGS = OLD_PRICE - NEW_PRICE // 650
+  const NEW_PRICE = 599
+  const SAVINGS = 651 // 1250 - 599
 
   return (
     <section className="relative bg-black text-white py-24 md:py-32 overflow-hidden">
@@ -43,6 +43,22 @@ export default function Hero() {
           <p className="text-lg text-neutral-200 max-w-2xl mx-auto">
             ENERGY • LIBIDO • PERFORMANCE
           </p>
+        </Reveal>
+        {/* Product image */}
+        <Reveal delay={0.1}>
+          <div className="mt-8 flex justify-center">
+            <img
+              src="/prod.png"
+              alt="POWER ROOTS"
+              className="
+                w-[220px] md:w-[260px]
+                drop-shadow-[0_20px_45px_rgba(0,0,0,0.65)]
+                select-none
+              "
+              loading="lazy"
+              draggable={false}
+            />
+          </div>
         </Reveal>
 
         <Reveal delay={0.1}>

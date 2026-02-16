@@ -1,30 +1,14 @@
 import Countdown from "./Countdown"
 import Reveal from "./Reveal"
 import { useState } from "react"
+import OrderModal from "./OrderModal"
 
 export default function OrderForm() {
   const OLD_PRICE = 1250
-  const NEW_PRICE = 600
-  const SAVINGS = OLD_PRICE - NEW_PRICE // 650
+  const NEW_PRICE = 599
+  const SAVINGS = 651 // 1250 - 599
 
-  const [name, setName] = useState("")
-  const [phone, setPhone] = useState("")
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (name.trim() && phone.trim()) {
-      const newOrder = {
-        name: name.trim(),
-        phone: phone.trim(),
-        date: new Date().toISOString()
-      }
-      const existing = JSON.parse(localStorage.getItem("orders") || "[]")
-      localStorage.setItem("orders", JSON.stringify([...existing, newOrder]))
-      setName("")
-      setPhone("")
-      alert("Заявка відправлена! Ми зв’яжемося з вами найближчим часом.")
-    }
-  }
+  const [open, setOpen] = useState(false)
 
   return (
     <section id="order" className="relative bg-black text-white py-24 overflow-hidden">
@@ -45,7 +29,7 @@ export default function OrderForm() {
             </h2>
 
             <p className="text-neutral-300 mb-6">
-              Залиште заявку — ми зв’яжемося з вами для підтвердження.
+              Натисніть “Замовити” і заповніть дані для доставки Новою Поштою.
             </p>
           </div>
         </Reveal>
@@ -76,53 +60,29 @@ export default function OrderForm() {
           </div>
         </Reveal>
 
-        {/* Form */}
+        {/* Button */}
         <Reveal delay={0.14}>
-          <form onSubmit={handleSubmit} className="space-y-4 text-left rounded-2xl border border-yellow-400/15 bg-black/55 backdrop-blur-[2px] p-6">
-            <label className="block">
-              <span className="text-sm text-neutral-300">Ім’я</span>
-              <input
-                className="mt-2 w-full p-4 rounded-xl bg-black/40 border border-yellow-400/15 text-white placeholder:text-neutral-500 outline-none focus:border-yellow-400/40"
-                placeholder="Введіть ваше ім’я"
-                name="name"
-                autoComplete="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            </label>
+          <button
+            type="button"
+            onClick={() => setOpen(true)}
+            className="
+              w-full
+              bg-linear-to-r from-yellow-400 to-orange-500
+              text-black py-5 rounded-xl font-extrabold tracking-wide text-lg
+              hover:scale-[1.02] transition
+              shadow-[0_0_30px_#ff6a00]
+            "
+          >
+            ЗАМОВИТИ ПРЯМО ЗАРАЗ!
+          </button>
 
-            <label className="block">
-              <span className="text-sm text-neutral-300">Телефон</span>
-              <input
-                className="mt-2 w-full p-4 rounded-xl bg-black/40 border border-yellow-400/15 text-white placeholder:text-neutral-500 outline-none focus:border-yellow-400/40"
-                placeholder="Введіть номер телефону"
-                name="phone"
-                inputMode="tel"
-                autoComplete="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-              />
-            </label>
-
-            <button
-              type="submit"
-              className="
-                w-full mt-2
-                bg-linear-to-r from-yellow-400 to-orange-500
-                text-black py-4 rounded-xl font-bold tracking-wide
-                hover:scale-[1.02] transition
-                shadow-[0_0_30px_#ff6a00]
-              "
-            >
-              ОТРИМАТИ ЗІ ЗНИЖКОЮ
-            </button>
-
-            <p className="text-xs text-neutral-400 leading-relaxed mt-4">
-              Натискаючи кнопку, ви погоджуєтеся з обробкою персональних даних для зворотного зв’язку.
-            </p>
-          </form>
+          <p className="text-xs text-neutral-400 leading-relaxed mt-4">
+            Натискаючи кнопку, ви погоджуєтеся з обробкою персональних даних для зворотного зв’язку.
+          </p>
         </Reveal>
       </div>
+
+      <OrderModal open={open} onClose={() => setOpen(false)} />
     </section>
   )
 }

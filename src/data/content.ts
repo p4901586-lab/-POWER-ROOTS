@@ -1,10 +1,13 @@
 export const brand = "POWER ROOTS"
+
 export const pricing = {
   oldPrice: 1250,
-  newPrice: 600,
+  newPrice: 599,
   currency: "грн",
 }
-export const savings = pricing.oldPrice - pricing.newPrice // 650
+
+// 1250 - 599 = 651
+export const savings = pricing.oldPrice - pricing.newPrice
 
 export const story = {
   eyebrow: "Асоціація урологів та андрологів",
@@ -14,13 +17,12 @@ export const story = {
   ],
   claim: "Здорова потенція до 75 років — це норма. Важливо підтримувати організм правильно та вчасно.",
 
-promo: {
-  title: "Акція для чоловіків з України",
-  text: `Отримайте ${brand} зі знижкою. Кількість наборів обмежена.`,
-  until: "Акція діє до 18.12.2025 включно.",
-  cta: "Отримати зі знижкою",
-},
-
+  promo: {
+    title: "Акція для чоловіків з України",
+    text: `Отримайте ${brand} зі знижкою. Кількість наборів обмежена.`,
+    until: "Акція діє до 18.06.2026 включно.",
+    cta: "Отримати зі знижкою",
+  },
 
   stats: {
     title: "Трохи фактів",
