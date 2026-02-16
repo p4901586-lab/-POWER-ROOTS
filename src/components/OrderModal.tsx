@@ -54,42 +54,55 @@ export default function OrderModal({ open, onClose }: Props) {
     setQty(1)
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+ const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault()
 
-    const payload = {
-      firstName: firstName.trim(),
-      lastName: lastName.trim(),
-      middleName: middleName.trim(),
-      phone: phone.trim(),
-      oblast: oblast.trim(),
-      city: city.trim(),
-      npBranch: npBranch.trim(),
-      qty,
-      total,
-      date: new Date().toISOString(),
-    }
+  const payload = {
+    firstName: firstName.trim(),
+    lastName: lastName.trim(),
+    middleName: middleName.trim(),
+    phone: phone.trim(),
+    region: oblast.trim(),      // <— важливо: в API поле region
+    city: city.trim(),
+    npBranch: npBranch.trim(),
+    qty,
+    total,
+  }
 
-    if (
-      !payload.firstName ||
-      !payload.lastName ||
-      !payload.middleName ||
-      !payload.phone ||
-      !payload.oblast ||
-      !payload.city ||
-      !payload.npBranch
-    ) {
-      alert("Будь ласка, заповніть усі поля ✅")
+  if (
+    !payload.firstName ||
+    !payload.lastName ||
+    !payload.middleName ||
+    !payload.phone ||
+    !payload.region ||
+    !payload.city ||
+    !payload.npBranch
+  ) {
+    alert("Будь ласка, заповніть усі поля ✅")
+    return
+  }
+
+  try {
+    const res = await fetch("/api/orders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    })
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}))
+      alert(err?.error || "Помилка відправки заявки")
       return
     }
 
-    const existing = JSON.parse(localStorage.getItem("orders") || "[]")
-    localStorage.setItem("orders", JSON.stringify([...existing, payload]))
-
     reset()
     onClose()
-window.location.href = "/thanks"
+    window.location.href = "/thanks"
+  } catch (err) {
+    alert("Немає зв’язку. Спробуйте ще раз.")
   }
+}
+
 
   if (!open && !mounted) return null
 

@@ -41,12 +41,14 @@ export default function AdminPanel() {
   const [orders, setOrders] = useState<OrderAny[]>([])
   const [openOrderIndex, setOpenOrderIndex] = useState<number | null>(null)
 
-  useEffect(() => {
+useEffect(() => {
+  ;(async () => {
+    // ---------- REVIEWS (як було, локально) ----------
     const stored = localStorage.getItem("reviews")
     if (stored) {
       setReviews(JSON.parse(stored))
     } else {
-      const initial = initialReviews.map((r) => ({
+      const initial = initialReviews.map(r => ({
         ...r,
         status: "approved" as const,
         id: Math.random().toString(36),
@@ -55,13 +57,19 @@ export default function AdminPanel() {
       localStorage.setItem("reviews", JSON.stringify(initial))
     }
 
-    const storedOrders = localStorage.getItem("orders")
-    if (storedOrders) {
-      const parsed = JSON.parse(storedOrders) as OrderAny[]
-      // показуємо нові зверху, щоб "Замовлення 1" було найсвіжіше
-      setOrders(parsed.slice().reverse())
+    // ---------- ORDERS (ГЛОБАЛЬНО з Redis) ----------
+    try {
+      const r = await fetch("/api/orders")
+      if (r.ok) {
+        const data = await r.json()
+        setOrders((data.orders || []).slice().reverse())
+      }
+    } catch (e) {
+      console.error("Failed to load orders", e)
     }
-  }, [])
+  })()
+}, [])
+
 
   const updateReviewStatus = (id: string, status: "approved" | "pending" | "rejected") => {
     const updated = reviews.map((r) => (r.id === id ? { ...r, status } : r))
