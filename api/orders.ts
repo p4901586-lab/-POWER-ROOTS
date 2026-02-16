@@ -1,80 +1,90 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node"
 import { createClient } from "redis"
 
-const REDIS_URL =
-  process.env.REDIS_URL ||
-  process.env.STORAGE_URL || // <-- якщо префікс STORAGE
-  process.env.UPSTASH_REDIS_REST_URL // fallback (інколи є)
-
-if (!REDIS_URL) {
-  console.error("Missing REDIS_URL / STORAGE_URL env var")
+type Order = {
+  id: string
+  firstName: string
+  lastName: string
+  middleName: string
+  phone: string
+  region: string
+  city: string
+  npBranch: string
+  qty: number
+  total: number
+  createdAt: string
 }
 
-const client = createClient({
-  url: REDIS_URL,
-})
-
-let connected = false
+let client: ReturnType<typeof createClient> | null = null
 async function getRedis() {
-  if (!connected) {
+  const url = process.env.REDIS_URL
+  if (!url) throw new Error("Missing REDIS_URL env variable")
+  if (!client) {
+    client = createClient({ url })
+    client.on("error", () => {})
     await client.connect()
-    connected = true
   }
   return client
 }
 
 const KEY = "orders:list"
 
+function json(res: VercelResponse, status: number, data: any) {
+  res.status(status).setHeader("Content-Type", "application/json")
+  res.setHeader("Access-Control-Allow-Origin", "*")
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS")
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type")
+  res.end(JSON.stringify(data))
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  if (req.method === "OPTIONS") return json(res, 200, { ok: true })
+
   try {
     const redis = await getRedis()
 
-    // ---------- GET ----------
     if (req.method === "GET") {
-      const items = await redis.lRange(KEY, 0, 999) // newest first
-      const orders = items.map((s) => JSON.parse(s))
-      return res.status(200).json({ orders })
+      const raw = (await redis.lRange(KEY, 0, -1)) as string[]
+      const orders = raw
+        .map((s) => JSON.parse(s) as Order)
+        .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
+      return json(res, 200, { orders })
     }
 
-    // ---------- POST ----------
     if (req.method === "POST") {
       const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body
 
-      // приймаємо і region і oblast, щоб ти не парився
-      const payload = {
-        firstName: (body?.firstName || "").trim(),
-        lastName: (body?.lastName || "").trim(),
-        middleName: (body?.middleName || "").trim(),
-        phone: (body?.phone || "").trim(),
-        oblast: (body?.oblast || body?.region || "").trim(),
-        city: (body?.city || "").trim(),
-        npBranch: (body?.npBranch || "").trim(),
-        qty: Number(body?.qty || 1),
-        total: Number(body?.total || 0),
-        date: new Date().toISOString(),
+      // мінімальна валідація
+      const required = ["firstName", "lastName", "middleName", "phone", "region", "city", "npBranch"]
+      for (const k of required) {
+        if (!body?.[k] || String(body[k]).trim() === "") {
+          return json(res, 400, { error: `Missing field: ${k}` })
+        }
       }
 
-      if (
-        !payload.firstName ||
-        !payload.lastName ||
-        !payload.middleName ||
-        !payload.phone ||
-        !payload.oblast ||
-        !payload.city ||
-        !payload.npBranch
-      ) {
-        return res.status(400).json({ error: "Заповніть усі поля" })
+      const order: Order = {
+        id: crypto.randomUUID(),
+        firstName: String(body.firstName).trim(),
+        lastName: String(body.lastName).trim(),
+        middleName: String(body.middleName).trim(),
+        phone: String(body.phone).trim(),
+        region: String(body.region).trim(),
+        city: String(body.city).trim(),
+        npBranch: String(body.npBranch).trim(),
+        qty: Number(body.qty) || 1,
+        total: Number(body.total) || 0,
+        createdAt: new Date().toISOString(),
       }
 
-      // додаємо НА ПОЧАТОК списку (щоб Замовлення 1 було найновіше)
-      await redis.lPush(KEY, JSON.stringify(payload))
+      await redis.lPush(KEY, JSON.stringify(order))
+      // щоб не ріс безкінечно (наприклад 2000 останніх)
+      await redis.lTrim(KEY, 0, 1999)
 
-      return res.status(200).json({ ok: true })
+      return json(res, 200, { ok: true, order })
     }
 
-    return res.status(405).json({ error: "Method not allowed" })
+    return json(res, 405, { error: "Method not allowed" })
   } catch (e: any) {
-    console.error("orders api error:", e)
-    return res.status(500).json({ error: e?.message || "Server error" })
+    return json(res, 500, { error: e?.message || "Server error" })
   }
 }
