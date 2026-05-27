@@ -36,9 +36,9 @@ export default function OrderModal({ open, onClose }: Props) {
   // 2 = 999
   // 3+ = 999 + (qty-2)*400  => 3=1399, 4=1799 ...
   const total = useMemo(() => {
-    if (qty <= 1) return 599
-    if (qty === 2) return 999
-    return 999 + (qty - 2) * 400
+    if (qty <= 1) return 1350
+    if (qty === 2) return 2700
+    return 2700 + (qty - 2) * 800
   }, [qty])
 
   const perBottle = useMemo(() => Math.round(total / qty), [total, qty])
