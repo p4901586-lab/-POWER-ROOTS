@@ -31,10 +31,7 @@ export default function OrderModal({ open, onClose }: Props) {
     return () => window.removeEventListener("keydown", onKey)
   }, [onClose])
 
-  // pricing logic:
-  // 1 = 599
-  // 2 = 999
-  // 3+ = 999 + (qty-2)*400  => 3=1399, 4=1799 ...
+
   const total = useMemo(() => {
     if (qty <= 1) return 1350
     if (qty === 2) return 2700
