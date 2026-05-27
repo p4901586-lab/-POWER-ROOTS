@@ -1,10 +1,6 @@
 import Reveal from "./Reveal"
 
 export default function Hero() {
-  const OLD_PRICE = 1500
-  const NEW_PRICE = 1350
-  const SAVINGS = 150 // 1500 - 1350
-
   return (
     <section className="relative bg-black text-white py-24 md:py-32 overflow-hidden">
       {/* background image */}
@@ -44,6 +40,7 @@ export default function Hero() {
             ENERGY • LIBIDO • PERFORMANCE
           </p>
         </Reveal>
+
         {/* Product image */}
         <Reveal delay={0.1}>
           <div className="mt-8 flex justify-center">
@@ -76,26 +73,26 @@ export default function Hero() {
           </p>
         </Reveal>
 
-{/* Pricing */}
-<Reveal delay={0.16}>
-  <div className="mt-8 flex flex-col items-center gap-2">
-    <div className="flex items-end gap-3">
-      <span className="text-neutral-400 line-through text-lg">
-        1500 грн
-      </span>
-      <span className="text-yellow-300 font-extrabold text-4xl leading-none">
-        1350 грн
-      </span>
-    </div>
+        {/* Pricing */}
+        <Reveal delay={0.16}>
+          <div className="mt-8 flex flex-col items-center gap-2">
+            <div className="flex items-end gap-3">
+              <span className="text-neutral-400 line-through text-lg">
+                1500 грн
+              </span>
+              <span className="text-yellow-300 font-extrabold text-4xl leading-none">
+                1350 грн
+              </span>
+            </div>
 
-    <div className="text-sm text-neutral-300">
-      Економія{" "}
-      <span className="text-yellow-300 font-semibold">
-        150 грн
-      </span>
-    </div>
-  </div>
-</Reveal>
+            <div className="text-sm text-neutral-300">
+              Економія{" "}
+              <span className="text-yellow-300 font-semibold">
+                150 грн
+              </span>
+            </div>
+          </div>
+        </Reveal>
 
         <Reveal delay={0.2}>
           <a
