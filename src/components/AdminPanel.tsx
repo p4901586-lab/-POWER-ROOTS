@@ -57,16 +57,19 @@ useEffect(() => {
       localStorage.setItem("reviews", JSON.stringify(initial))
     }
 
-    // ---------- ORDERS (ГЛОБАЛЬНО з Redis) ----------
-    try {
-      const r = await fetch("/api/orders")
-      if (r.ok) {
-        const data = await r.json()
-        setOrders((data.orders || []).slice().reverse())
-      }
-    } catch (e) {
-      console.error("Failed to load orders", e)
-    }
+// ---------- ORDERS (Google Sheets) ----------
+try {
+  const r = await fetch(
+    "https://script.google.com/macros/s/AKfycbzmTgJf1cDD0Aa94y9n6J2r8MRKTc4cDD31DgjUh1Ymdqg0uE3QdrLnqPMfmw9RQvlgnA/exec"
+  )
+
+  if (r.ok) {
+    const data = await r.json()
+    setOrders(data.orders || [])
+  }
+} catch (e) {
+  console.error("Failed to load orders from Google Sheets", e)
+}
   })()
 }, [])
 
@@ -97,13 +100,11 @@ useEffect(() => {
     }
   }, [])
 
-  const deleteOrder = (idx: number) => {
-    const next = orders.filter((_, i) => i !== idx)
-    setOrders(next)
-    // зберігаємо назад у localStorage (повертаємо порядок як було)
-    localStorage.setItem("orders", JSON.stringify(next.slice().reverse()))
-    setOpenOrderIndex(null)
-  }
+const deleteOrder = (idx: number) => {
+  const next = orders.filter((_, i) => i !== idx)
+  setOrders(next)
+  setOpenOrderIndex(null)
+}
 
   const copyOrder = async (o: OrderAny, number: number) => {
     let text = `Замовлення ${number}\n`
