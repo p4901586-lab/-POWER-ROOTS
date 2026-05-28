@@ -51,7 +51,7 @@ export default function OrderModal({ open, onClose }: Props) {
     setQty(1)
   }
 
- const handleSubmit = async (e: React.FormEvent) => {
+const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault()
 
   const payload = {
@@ -59,7 +59,7 @@ export default function OrderModal({ open, onClose }: Props) {
     lastName: lastName.trim(),
     middleName: middleName.trim(),
     phone: phone.trim(),
-    region: oblast.trim(),      // <— важливо: в API поле region
+    oblast: oblast.trim(),
     city: city.trim(),
     npBranch: npBranch.trim(),
     qty,
@@ -71,7 +71,7 @@ export default function OrderModal({ open, onClose }: Props) {
     !payload.lastName ||
     !payload.middleName ||
     !payload.phone ||
-    !payload.region ||
+    !payload.oblast ||
     !payload.city ||
     !payload.npBranch
   ) {
@@ -80,15 +80,21 @@ export default function OrderModal({ open, onClose }: Props) {
   }
 
   try {
-    const res = await fetch("/api/orders", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    })
+    const res = await fetch(
+      "https://script.google.com/macros/s/AKfycby4TbBcHkbR5RnKKwtCT5nTE9Q33U09xzjkpS5BGFCRpI14kowg2F6cH2T-AYrO37_x/exec",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8",
+        },
+        body: JSON.stringify(payload),
+      }
+    )
 
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      alert(err?.error || "Помилка відправки заявки")
+    const data = await res.json()
+
+    if (!data.ok) {
+      alert(data.error || "Помилка відправки заявки")
       return
     }
 
@@ -96,10 +102,10 @@ export default function OrderModal({ open, onClose }: Props) {
     onClose()
     window.location.href = "/thanks"
   } catch (err) {
+    console.error(err)
     alert("Немає зв’язку. Спробуйте ще раз.")
   }
 }
-
 
   if (!open && !mounted) return null
 
