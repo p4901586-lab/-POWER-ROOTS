@@ -4,9 +4,9 @@ import { useState } from "react"
 import OrderModal from "./OrderModal"
 
 export default function OrderForm() {
-  const OLD_PRICE = 1500
-  const NEW_PRICE = 1350
-  const SAVINGS = 150 // 1500 - 1350
+  const OLD_PRICE = 600
+  const NEW_PRICE = 499
+  const SAVINGS = 101 // 600 - 499
 
   const [open, setOpen] = useState(false)
 
