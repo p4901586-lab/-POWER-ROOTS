@@ -1,9 +1,9 @@
 import Reveal from "./Reveal"
 
 export default function Hero() {
-  const OLD_PRICE = 1500
-  const NEW_PRICE = 1350
-  const SAVINGS = 150 // 1500 - 1350
+  const OLD_PRICE = 600
+  const NEW_PRICE = 499
+  const SAVINGS = 101 // 600 - 499
 
   return (
     <section className="relative bg-black text-white py-24 md:py-32 overflow-hidden">

@@ -1,12 +1,12 @@
 export const brand = "POWER ROOTS"
 
 export const pricing = {
-  oldPrice: 1500,
-  newPrice: 1350,
+  oldPrice: 600,
+  newPrice: 499,
   currency: "грн",
 }
 
-// 1500 - 1350 = 150
+// 600 - 499 = 101
 export const savings = pricing.oldPrice - pricing.newPrice
 
 export const story = {
